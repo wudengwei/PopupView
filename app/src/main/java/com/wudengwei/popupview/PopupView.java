@@ -25,6 +25,12 @@ public class PopupView {
 
     //view点击事件
     private OnClickListener mOnClickListener;
+    //popupwindow消失事件
+    private OnDismissListener mOnDismissListener;
+
+    public void setmOnDismissListener(OnDismissListener mOnDismissListener) {
+        this.mOnDismissListener = mOnDismissListener;
+    }
 
     public void setOnClickListener(int[] viewIdArr, OnClickListener mOnClickListener) {
         this.mOnClickListener = mOnClickListener;
@@ -129,8 +135,26 @@ public class PopupView {
                     return focusable && !outsideTouchable;
                 }
             });
-            popupView.setBackgroundAlpha(bgAlpha);
+            popupView.mPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    // popupWindow隐藏时恢复屏幕正常透明度
+                    setBackgroundAlpha(1.0f);
+                    if (popupView.mOnDismissListener != null) {
+                        popupView.mOnDismissListener.onDismiss();
+                    }
+                }
+            });
+            setBackgroundAlpha(bgAlpha);
             return popupView;
+        }
+
+        /*屏幕透明度*/
+        private void setBackgroundAlpha(float bgAlpha) {
+            WindowManager.LayoutParams lp = mActivity.get().getWindow().getAttributes();
+            lp.alpha = bgAlpha;
+            mActivity.get().getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            mActivity.get().getWindow().setAttributes(lp);
         }
     }
 
@@ -150,15 +174,11 @@ public class PopupView {
         }
     }
 
-    /*屏幕透明度*/
-    private void setBackgroundAlpha(float bgAlpha) {
-        WindowManager.LayoutParams lp = mActivity.getWindow().getAttributes();
-        lp.alpha = bgAlpha;
-        mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        mActivity.getWindow().setAttributes(lp);
-    }
-
     public interface OnClickListener {
         void onClick(View view);
+    }
+
+    public interface OnDismissListener {
+        void onDismiss();
     }
 }
