@@ -3,6 +3,7 @@ package com.wudengwei.popupview;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,8 +21,8 @@ import java.lang.ref.WeakReference;
  */
 public class PopupView {
     private Activity mActivity;
-    public PopupWindow mPopupWindow;
-    public View mContentView;
+    private PopupWindow mPopupWindow;
+    private View mContentView;
 
     //view点击事件
     private OnClickListener mOnClickListener;
@@ -156,6 +157,10 @@ public class PopupView {
             mActivity.get().getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             mActivity.get().getWindow().setAttributes(lp);
         }
+    }
+
+    public View getView(@IdRes int viewId) {
+        return mContentView.findViewById(viewId);
     }
 
     public void showAsDropDown(View anchor, int xoff, int yoff) {
